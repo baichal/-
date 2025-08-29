@@ -586,6 +586,18 @@ class Copartner():
             ]
             if not completed:
                 self.sign(session, music_data, msg)
+                # 重新获取音乐数据以更新完成状态
+                music_data, user_name = self.valid(session)
+                if music_data:
+                    completed = music_data['completed']
+                    # 更新消息列表中的完成状态
+                    for item in msg:
+                        if item.get('name') == '基础评定完成状态':
+                            item['value'] = '已完成' if completed else '未完成'
+                        elif item.get('name') == '基础评定获得积分':
+                            item['value'] = music_data['integral']
+                        elif item.get('name') == '基础评定已完成数':
+                            item['value'] = music_data["completedCount"]
             extra_music_data, extra_music_computed_count = self.get_extra_music(session)
             if len(extra_music_data):
                 msg.append({"name": "待额外评定数", "value": len(extra_music_data)})
